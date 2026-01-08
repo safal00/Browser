@@ -3,23 +3,89 @@
 <head>
   <meta charset="UTF-8" />
   <title>Eagle Schools Portal</title>
-  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: #f8fafc;
+    }
+    header {
+      height: 48px;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+    }
+    main {
+      padding: 20px;
+    }
+    button {
+      margin-right: 12px;
+      padding: 8px 14px;
+    }
+  </style>
 </head>
 <body>
 
-<header class="tab-bar">
-  <button class="tab active" data-tab="home">Home</button>
-  <button class="tab" data-tab="attendance">Attendance</button>
-  <button class="tab" data-tab="reports">Reports</button>
-  <button class="tab add-tab">＋</button>
+<header>
+  Eagle Schools Portal
 </header>
 
-<main class="content">
-  <iframe id="home" class="active" src="https://portal.eagleschools.net/home.html"></iframe>
-  <iframe id="attendance" src="https://portal.eagleschools.net/attendance.html"></iframe>
-  <iframe id="reports" src="https://portal.eagleschools.net/reports.html"></iframe>
-</main>
+<main id="app"></main>
 
-<script src="app.js"></script>
+<script>
+  const app = document.getElementById("app");
+
+  function navigate(page) {
+    history.pushState({ page }, "", `#${page}`);
+    render(page);
+  }
+
+  function render(page = "home") {
+    if (page === "home") {
+      app.innerHTML = `
+        <h2>Home</h2>
+        <button onclick="navigate('attendance')">Attendance</button>
+        <button onclick="navigate('reports')">Reports</button>
+      `;
+    }
+
+    if (page === "attendance") {
+      app.innerHTML = `
+        <h2>Attendance</h2>
+        <button onclick="navigate('home')">Back</button>
+      `;
+    }
+
+    if (page === "reports") {
+      app.innerHTML = `
+        <h2>Reports</h2>
+        <button onclick="navigate('home')">Back</button>
+      `;
+    }
+  }
+
+  window.onpopstate = e => {
+    render(e.state?.page || "home");
+  };
+
+  render(location.hash.replace("#", "") || "home");
+
+  // HARD BLOCK real tabs & windows
+  document.addEventListener("keydown", e => {
+    if (
+      e.ctrlKey &&
+      ["t", "n", "w"].includes(e.key.toLowerCase())
+    ) {
+      e.preventDefault();
+    }
+  });
+
+  window.open = () => null;
+
+  document.documentElement.requestFullscreen?.().catch(() => {});
+</script>
+
 </body>
 </html>
