@@ -1,60 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Eagle Schools Portal</title>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <script>
-    // Force ALL anchor links to open in the same window
-    document.addEventListener(
-      "click",
-      function (e) {
-        const link = e.target.closest("a");
-        if (!link) return;
-
-        // Force same-tab navigation
-        link.target = "_self";
-        link.rel = "";
-      },
-      true
-    );
-
-    // Override window.open to stay in the same window
-    window.open = function (url) {
-      if (url) {
-        window.location.href = url;
-      }
-      return null;
-    };
-
-    // Block keyboard shortcuts for new tabs/windows
-    document.addEventListener("keydown", function (e) {
-      if (
-        e.ctrlKey &&
-        ["t", "n", "w"].includes(e.key.toLowerCase())
-      ) {
-        e.preventDefault();
-      }
-    });
-
-    // Optional: prevent accidental unloads
-    window.addEventListener("beforeunload", function (e) {
-      e.preventDefault();
-      e.returnValue = "";
-    });
-  </script>
+  <meta charset="UTF-8">
+  <title>GoGo ECSD Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f0f4f8;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 40px;
+      color: #0f172a;
+    }
+    .btn {
+      padding: 20px 40px;
+      font-size: 24px;
+      background: #1e40af;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn:hover {
+      background: #3b82f6;
+    }
+  </style>
 </head>
-
 <body>
-  <!--
-    This page is intended to be served at:
-    https://portal.eagleschools.net/ui/applications
 
-    No redirects.
-    No iframes.
-    ChromeOS Kiosk enforces single window/tab.
-  -->
+<div>
+  <h1>GoGo ECSD Portal</h1>
+  <button class="btn" onclick="goToPortal()">Enter Portal</button>
+</div>
+
+<script>
+  function goToPortal() {
+    // Opens the portal in the SAME tab
+    window.location.href = "https://portal.eagleschools.net/ui/applications";
+  }
+</script>
+
 </body>
 </html>
