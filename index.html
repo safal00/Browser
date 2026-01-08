@@ -3,89 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <title>Eagle Schools Portal</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, sans-serif;
-      background: #f8fafc;
-    }
-    header {
-      height: 48px;
-      background: #0f172a;
-      color: white;
-      display: flex;
-      align-items: center;
-      padding: 0 16px;
-    }
-    main {
-      padding: 20px;
-    }
-    button {
-      margin-right: 12px;
-      padding: 8px 14px;
-    }
-  </style>
-</head>
-<body>
 
-<header>
-  Eagle Schools Portal
-</header>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<main id="app"></main>
+  <script>
+    // Force ALL anchor links to open in the same window
+    document.addEventListener(
+      "click",
+      function (e) {
+        const link = e.target.closest("a");
+        if (!link) return;
 
-<script>
-  const app = document.getElementById("app");
+        // Force same-tab navigation
+        link.target = "_self";
+        link.rel = "";
+      },
+      true
+    );
 
-  function navigate(page) {
-    history.pushState({ page }, "", `#${page}`);
-    render(page);
-  }
+    // Override window.open to stay in the same window
+    window.open = function (url) {
+      if (url) {
+        window.location.href = url;
+      }
+      return null;
+    };
 
-  function render(page = "home") {
-    if (page === "home") {
-      app.innerHTML = `
-        <h2>Home</h2>
-        <button onclick="navigate('attendance')">Attendance</button>
-        <button onclick="navigate('reports')">Reports</button>
-      `;
-    }
+    // Block keyboard shortcuts for new tabs/windows
+    document.addEventListener("keydown", function (e) {
+      if (
+        e.ctrlKey &&
+        ["t", "n", "w"].includes(e.key.toLowerCase())
+      ) {
+        e.preventDefault();
+      }
+    });
 
-    if (page === "attendance") {
-      app.innerHTML = `
-        <h2>Attendance</h2>
-        <button onclick="navigate('home')">Back</button>
-      `;
-    }
-
-    if (page === "reports") {
-      app.innerHTML = `
-        <h2>Reports</h2>
-        <button onclick="navigate('home')">Back</button>
-      `;
-    }
-  }
-
-  window.onpopstate = e => {
-    render(e.state?.page || "home");
-  };
-
-  render(location.hash.replace("#", "") || "home");
-
-  // HARD BLOCK real tabs & windows
-  document.addEventListener("keydown", e => {
-    if (
-      e.ctrlKey &&
-      ["t", "n", "w"].includes(e.key.toLowerCase())
-    ) {
+    // Optional: prevent accidental unloads
+    window.addEventListener("beforeunload", function (e) {
       e.preventDefault();
-    }
-  });
+      e.returnValue = "";
+    });
+  </script>
+</head>
 
-  window.open = () => null;
+<body>
+  <!--
+    This page is intended to be served at:
+    https://portal.eagleschools.net/ui/applications
 
-  document.documentElement.requestFullscreen?.().catch(() => {});
-</script>
-
+    No redirects.
+    No iframes.
+    ChromeOS Kiosk enforces single window/tab.
+  -->
 </body>
 </html>
