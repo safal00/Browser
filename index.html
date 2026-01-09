@@ -60,27 +60,24 @@
 <body>
 
   <!-- Back Button -->
-  <button class="back-button" onclick="goBack()">
-    &#x2190;
-  </button>
+  <button class="back-button" onclick="goBack()">&#x2190;</button>
 
   <h1>Welcome to ECSD Kiosk Browser</h1>
 
-  <!-- Logo -->
   <img src="assets/icon.png" class="logo" alt="ECSD Logo">
 
-  <!-- Marquee -->
   <marquee behavior="scroll" direction="left">
     This is managed by ECSD IT - Please ensure you log out when finished!
   </marquee>
 
-  <!-- Allowed services -->
   <div class="container">
+    <!-- Renaissance -->
     <a href="https://eagleschools.us001-rapididentity.com/idp/profile/SAML2/Unsolicited/SSO?providerId=https://global-pr.renaissance-go.com/identityssorouter/sso/saml/">
       <img src="assets/renaissance.png" class="icon" alt="Renaissance">
       <p>Renaissance</p>
     </a>
 
+    <!-- Rapid ID -->
     <a href="https://portal.eagleschools.net">
       <img src="assets/rapidid.png" class="icon" alt="Rapid ID">
       <p>Rapid ID</p>
@@ -89,31 +86,44 @@
 
   <script>
     const allowedDomains = [
+      // RapidIdentity / SAML
+      'us001-rapididentity.com',
+      'rapididentity.com',
+
+      // Renaissance
       'renaissance-go.com',
+      'global-pr.renaissance-go.com',
+
+      // District portal
       'portal.eagleschools.net'
     ];
 
     function isDomainAllowed(url) {
-      const parsedUrl = new URL(url);
-      const domain = parsedUrl.hostname;
-      return allowedDomains.some(
-        allowed => domain === allowed || domain.endsWith(`.${allowed}`)
-      );
+      try {
+        const parsed = new URL(url);
+        return allowedDomains.some(
+          domain =>
+            parsed.hostname === domain ||
+            parsed.hostname.endsWith('.' + domain)
+        );
+      } catch {
+        return false;
+      }
     }
 
-    // Force same-window navigation and block everything else
-    document.addEventListener('click', function(event) {
+    // Force ALL links into same window (kiosk-safe)
+    document.addEventListener('click', function (event) {
       const link = event.target.closest('a');
       if (!link || !link.href) return;
 
       if (!isDomainAllowed(link.href)) {
         event.preventDefault();
-        alert('Access to this domain is blocked.');
+        alert('Access to this site is blocked.');
         return;
       }
 
       event.preventDefault();
-      window.location.href = link.href;
+      window.location.assign(link.href);
     }, true);
 
     function goBack() {
