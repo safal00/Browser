@@ -3,80 +3,101 @@
 <head>
   <meta charset="UTF-8">
   <title>ECSD Renaissance Kiosk</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <style>
     body {
       margin: 0;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 0;
       font-family: Arial, sans-serif;
       background: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
       text-align: center;
-      position: relative;
     }
-    .icon {
-      width: 140px;
+
+    h1 {
+      margin-bottom: 30px;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 50px;
+    }
+
+    .icon-button {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       cursor: pointer;
-    }
-    h2 {
-      margin-top: 20px;
+      text-decoration: none;
       color: #333;
     }
-    .signout {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      padding: 10px 18px;
-      font-size: 14px;
-      background: #b91c1c;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
+
+    .icon-button img {
+      width: 140px;
+      height: 140px;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
     }
-    .signout:hover {
-      background: #dc2626;
+
+    .icon-button img:hover {
+      transform: scale(1.05);
+    }
+
+    .icon-button p {
+      margin-top: 10px;
+      font-size: 16px;
+      font-weight: bold;
     }
   </style>
 </head>
 
 <body>
 
-<button class="signout" onclick="signOut()">Sign out</button>
+  <h1>Welcome to ECSD Kiosk Browser</h1>
 
-<div onclick="launchRenaissance()">
-  <img src="assets/renaissance.png" class="icon" alt="Renaissance">
-  <h2>Launch Renaissance</h2>
-</div>
+  <div class="container">
+    <!-- Launch Renaissance -->
+    <div class="icon-button" onclick="launchRenaissance()">
+      <img src="assets/renaissance.png" alt="Launch Renaissance">
+      <p>Launch Renaissance</p>
+    </div>
 
-<script>
-  const RENAISSANCE_SSO =
-    "https://eagleschools.us001-rapididentity.com/idp/profile/SAML2/Unsolicited/SSO?providerId=https://global-pr.renaissance-go.com/identityssorouter/sso/saml/";
+    <!-- Sign Out -->
+    <div class="icon-button" onclick="signOut()">
+      <img src="assets/signout.png" alt="Sign Out">
+      <p>Sign Out</p>
+    </div>
+  </div>
 
-  const LOGOUT_URL =
-    "https://portal.eagleschools.net/idp/logout";
+  <script>
+    const RENAISSANCE_SSO =
+      "https://eagleschools.us001-rapididentity.com/idp/profile/SAML2/Unsolicited/SSO?providerId=https://global-pr.renaissance-go.com/identityssorouter/sso/saml/";
+    const LOGOUT_URL = "https://portal.eagleschools.net/idp/logout";
 
-  function launchRenaissance() {
-    window.location.replace(RENAISSANCE_SSO);
-  }
+    function launchRenaissance() {
+      window.location.replace(RENAISSANCE_SSO);
+    }
 
-  function signOut() {
-    // Best-effort logout
-    window.location.replace(LOGOUT_URL);
-  }
+    function signOut() {
+      window.location.replace(LOGOUT_URL);
+    }
 
-  // Prevent back navigation reuse
-  history.pushState(null, "", location.href);
-  window.onpopstate = () => history.pushState(null, "", location.href);
-</script>
+    // Prevent back button reuse
+    history.pushState(null, "", location.href);
+    window.onpopstate = () => history.pushState(null, "", location.href);
+  </script>
 
 </body>
 </html>
