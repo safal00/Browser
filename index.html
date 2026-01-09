@@ -2,51 +2,124 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GoGo ECSD Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/icon.png">
+  <title>Welcome to ECSD Kiosk Browser</title>
+
   <style>
     body {
-      margin: 0;
+      text-align: center;
       font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    .icon {
+      width: 100px;
+      margin: 20px;
+      transition: transform 0.2s;
+    }
+    .icon:hover {
+      transform: scale(1.1);
+    }
+    .container {
       display: flex;
       justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: #f0f4f8;
-      text-align: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
     }
-    h1 {
-      margin-bottom: 40px;
-      color: #0f172a;
-    }
-    .btn {
-      padding: 20px 40px;
-      font-size: 24px;
-      background: #1e40af;
-      color: white;
-      border: none;
-      border-radius: 8px;
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
       cursor: pointer;
-      transition: background 0.3s;
+      font-size: 24px;
+      background: transparent;
+      border: none;
+      color: #007BFF;
     }
-    .btn:hover {
-      background: #3b82f6;
+    marquee {
+      background-color: #e7f3fe;
+      color: #31708f;
+      font-size: 18px;
+      padding: 10px;
+      margin-top: 20px;
+      border: 1px solid #bce8f1;
+      border-radius: 5px;
+    }
+    .logo {
+      width: 150px;
+      margin: 20px auto;
     }
   </style>
 </head>
+
 <body>
 
-<div>
-  <h1>GoGo ECSD Portal</h1>
-  <button class="btn" onclick="goToPortal()">Enter Portal</button>
-</div>
+  <!-- Back Button -->
+  <button class="back-button" onclick="goBack()">
+    &#x2190;
+  </button>
 
-<script>
-  function goToPortal() {
-    // Opens the portal in the SAME tab
-    window.location.href = "https://portal.eagleschools.net/ui/applications";
-  }
-</script>
+  <h1>Welcome to ECSD Kiosk Browser</h1>
+
+  <!-- Logo -->
+  <img src="assets/icon.png" class="logo" alt="ECSD Logo">
+
+  <!-- Marquee -->
+  <marquee behavior="scroll" direction="left">
+    This is managed by ECSD IT - Please ensure you log out when finished!
+  </marquee>
+
+  <!-- Allowed services -->
+  <div class="container">
+    <a href="https://global-zone51.renaissance-go.com/welcomeportal/248624">
+      <img src="assets/renaissance.png" class="icon" alt="Renaissance">
+      <p>Renaissance</p>
+    </a>
+
+    <a href="https://portal.eagleschools.net">
+      <img src="assets/rapidid.png" class="icon" alt="Rapid ID">
+      <p>Rapid ID</p>
+    </a>
+  </div>
+
+  <script>
+    const allowedDomains = [
+      'renaissance-go.com',
+      'portal.eagleschools.net'
+    ];
+
+    function isDomainAllowed(url) {
+      const parsedUrl = new URL(url);
+      const domain = parsedUrl.hostname;
+      return allowedDomains.some(
+        allowed => domain === allowed || domain.endsWith(`.${allowed}`)
+      );
+    }
+
+    // Force same-window navigation and block everything else
+    document.addEventListener('click', function(event) {
+      const link = event.target.closest('a');
+      if (!link || !link.href) return;
+
+      if (!isDomainAllowed(link.href)) {
+        event.preventDefault();
+        alert('Access to this domain is blocked.');
+        return;
+      }
+
+      event.preventDefault();
+      window.location.href = link.href;
+    }, true);
+
+    function goBack() {
+      window.history.back();
+    }
+  </script>
 
 </body>
 </html>
