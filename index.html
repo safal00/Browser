@@ -2,134 +2,73 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <title>ECSD Renaissance Kiosk</title>
+
+  <!-- Prevent caching -->
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#ffffff">
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="assets/icon.png">
-  <title>Welcome to ECSD Kiosk Browser</title>
 
   <style>
     body {
-      text-align: center;
-      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 0;
-      background-color: #f4f4f4;
-      color: #333;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      text-align: center;
     }
     .icon {
-      width: 100px;
-      margin: 20px;
-      transition: transform 0.2s;
-    }
-    .icon:hover {
-      transform: scale(1.1);
-    }
-    .container {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-    .back-button {
-      position: absolute;
-      top: 20px;
-      left: 20px;
+      width: 140px;
       cursor: pointer;
-      font-size: 24px;
-      background: transparent;
-      border: none;
-      color: #007BFF;
     }
-    marquee {
-      background-color: #e7f3fe;
-      color: #31708f;
-      font-size: 18px;
-      padding: 10px;
+    h2 {
       margin-top: 20px;
-      border: 1px solid #bce8f1;
-      border-radius: 5px;
-    }
-    .logo {
-      width: 150px;
-      margin: 20px auto;
+      color: #333;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Back Button -->
-  <button class="back-button" onclick="goBack()">&#x2190;</button>
+<div onclick="launchRenaissance()">
+  <img src="assets/renaissance.png" class="icon" alt="Renaissance">
+  <h2>Launch Renaissance</h2>
+</div>
 
-  <h1>Welcome to ECSD Kiosk Browser</h1>
+<script>
+  const RENAISSANCE_SSO =
+    "https://eagleschools.us001-rapididentity.com/idp/profile/SAML2/Unsolicited/SSO?providerId=https://global-pr.renaissance-go.com/identityssorouter/sso/saml/";
 
-  <img src="assets/icon.png" class="logo" alt="ECSD Logo">
+  /**
+   * Force fresh navigation every time
+   */
+  function launchRenaissance() {
+    window.location.replace(RENAISSANCE_SSO);
+  }
 
-  <marquee behavior="scroll" direction="left">
-    This is managed by ECSD IT - Please ensure you log out when finished!
-  </marquee>
+  /**
+   * Attempt best-effort session cleanup on exit
+   * (cannot guarantee, but helps)
+   */
+  window.addEventListener("beforeunload", () => {
+    try {
+      fetch("https://portal.eagleschools.net/logout", { mode: "no-cors" });
+      fetch("https://global-pr.renaissance-go.com/logout", { mode: "no-cors" });
+      fetch("https://us001-rapididentity.com/idp/logout", { mode: "no-cors" });
+    } catch (e) {}
+  });
 
-  <div class="container">
-    <!-- Renaissance -->
-    <a href="https://eagleschools.us001-rapididentity.com/idp/profile/SAML2/Unsolicited/SSO?providerId=https://global-pr.renaissance-go.com/identityssorouter/sso/saml/">
-      <img src="assets/renaissance.png" class="icon" alt="Renaissance">
-      <p>Renaissance</p>
-    </a>
-
-    <!-- Rapid ID -->
-    <a href="https://portal.eagleschools.net">
-      <img src="assets/rapidid.png" class="icon" alt="Rapid ID">
-      <p>Rapid ID</p>
-    </a>
-  </div>
-
-  <script>
-    const allowedDomains = [
-      // RapidIdentity / SAML
-      'us001-rapididentity.com',
-      'rapididentity.com',
-
-      // Renaissance
-      'renaissance-go.com',
-      'global-pr.renaissance-go.com',
-
-      // District portal
-      'portal.eagleschools.net'
-    ];
-
-    function isDomainAllowed(url) {
-      try {
-        const parsed = new URL(url);
-        return allowedDomains.some(
-          domain =>
-            parsed.hostname === domain ||
-            parsed.hostname.endsWith('.' + domain)
-        );
-      } catch {
-        return false;
-      }
-    }
-
-    // Force ALL links into same window (kiosk-safe)
-    document.addEventListener('click', function (event) {
-      const link = event.target.closest('a');
-      if (!link || !link.href) return;
-
-      if (!isDomainAllowed(link.href)) {
-        event.preventDefault();
-        alert('Access to this site is blocked.');
-        return;
-      }
-
-      event.preventDefault();
-      window.location.assign(link.href);
-    }, true);
-
-    function goBack() {
-      window.history.back();
-    }
-  </script>
+  /**
+   * Block back button reuse
+   */
+  history.pushState(null, "", location.href);
+  window.onpopstate = () => history.pushState(null, "", location.href);
+</script>
 
 </body>
 </html>
