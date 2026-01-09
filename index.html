@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>ECSD Renaissance Kiosk</title>
 
-  <!-- Prevent caching -->
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -21,6 +20,7 @@
       font-family: Arial, sans-serif;
       background: #f4f4f4;
       text-align: center;
+      position: relative;
     }
     .icon {
       width: 140px;
@@ -30,10 +30,27 @@
       margin-top: 20px;
       color: #333;
     }
+    .signout {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 10px 18px;
+      font-size: 14px;
+      background: #b91c1c;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .signout:hover {
+      background: #dc2626;
+    }
   </style>
 </head>
 
 <body>
+
+<button class="signout" onclick="signOut()">Sign out</button>
 
 <div onclick="launchRenaissance()">
   <img src="assets/renaissance.png" class="icon" alt="Renaissance">
@@ -44,28 +61,19 @@
   const RENAISSANCE_SSO =
     "https://eagleschools.us001-rapididentity.com/idp/profile/SAML2/Unsolicited/SSO?providerId=https://global-pr.renaissance-go.com/identityssorouter/sso/saml/";
 
-  /**
-   * Force fresh navigation every time
-   */
+  const LOGOUT_URL =
+    "https://portal.eagleschools.net/idp/logout";
+
   function launchRenaissance() {
     window.location.replace(RENAISSANCE_SSO);
   }
 
-  /**
-   * Attempt best-effort session cleanup on exit
-   * (cannot guarantee, but helps)
-   */
-  window.addEventListener("beforeunload", () => {
-    try {
-      fetch("https://portal.eagleschools.net/logout", { mode: "no-cors" });
-      fetch("https://global-pr.renaissance-go.com/logout", { mode: "no-cors" });
-      fetch("https://us001-rapididentity.com/idp/logout", { mode: "no-cors" });
-    } catch (e) {}
-  });
+  function signOut() {
+    // Best-effort logout
+    window.location.replace(LOGOUT_URL);
+  }
 
-  /**
-   * Block back button reuse
-   */
+  // Prevent back navigation reuse
   history.pushState(null, "", location.href);
   window.onpopstate = () => history.pushState(null, "", location.href);
 </script>
